@@ -5,6 +5,7 @@ app.use(express.static("node_modules"));
 app.use(require('./memberentityDB.js'));
 app.use(require('./furnitureentityDB.js'));
 app.use(require('./retailproductentityDB.js'));
+app.use(require("./promotionentityDB.js"))
 app.use(require('./countryentityDB.js'));
 app.use(require('./storeentityDB.js'));
 app.use(require('./payment.js'));
