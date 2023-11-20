@@ -1,3 +1,4 @@
+//taken from the fields of the Promotion table.
 class Promotion {
     constructor() {
         this.id = null;

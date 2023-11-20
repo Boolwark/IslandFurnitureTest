@@ -1,34 +1,40 @@
-// This page 
+// This page displays the item on promotion.
+
 <script src="../checkCountry.js" ></script>
 <html>
     <script src="../../header.js"></script>
     <body>
         <script>
             //get category from query parameter
-            var currentUrl = new URL(window.location.href);
-            var cat = currentUrl.searchParams.get("cat");
+            var countryId = localStorage.getItem('countryId');
+          
             document.addEventListener('DOMContentLoaded', function(){
-                var countryId = localStorage.getItem('countryId');
-                fetch(new Request('/api/getFurnitureByCat?cat=' + encodeURIComponent(cat) + '&countryId=' + countryId,
+         
+                fetch(new Request('/api/getAllItemsOnPromotion?countryId=' + countryId,
                 {
                     method: 'GET'
                 })).then(function (response) {
                     return response.json();
                 }).then(function (data) {
+                    
+                    console.log("Data look like",data)
                     var htmlTxt = '';
                    
-                        var furniture = data[0];
-                        //generate html for furnitures
+                        var promotions = data.promotionList;
+                        var furnitures = data.furnitureList;
+                        promotions.forEach((promotion,index) => {
+                              //generate html for furnitures
+                              var furniture = furnitures[index];
                         htmlTxt += '\
                             <li class="col-md-3 col-sm-6 col-xs-12 product" style="padding-bottom: 1%;padding-top: 2%;">\
                                 <span class="product-thumb-info">\
                                     <span class="product-thumb-info-image">\
                                         <span class="product-thumb-info-act">\
                                             <span class="product-thumb-info-act-left">\
-                                                <a href="furnitureProductDetails.html?sku=' + furniture.sku + '" style="color: white"><em>View Details</em></a>\
+                                                <a href="furnitureProductDetails.html?sku=' + promotion.itemID + '" style="color: white"><em>View Details</em></a>\
                                             </span>\
                                         </span>\
-                                        <img alt=""  class="img-responsive" src="' + furniture.imageURL + '">\
+                                        <img alt=""  class="img-responsive" src="' +  promotion.imageurl + '">\
                                     </span>\
                                     <span class="product-thumb-info-content">\
                                         <h4>' + furniture.name + '</h4>\
@@ -42,13 +48,15 @@
                                             <em>Width: ' + furniture.width + '</em>\
                                         </span><br/>\
                                         <span class="product-thumb-info-act-left">\
-                                            <em>Price: $' + furniture.price + '.00</em>\
+                                            <em>Original Price: $' + furniture.price + '.00</em>\
+                                        </span><br/> <span class="product-thumb-info-act-left">\
+                                            <em>Discounted Price: $' + furniture.price * (100-promotion.discountrate)/100 + '.00</em>\
                                         </span><br/>\
                                         <form action="furnitureProductDetails.html">\
                                             <input type="hidden" name="sku" value="' + furniture.sku + '"/>\
                                             <input type="submit" class="btn btn-primary btn-block" value="More Details"/>\
                                         </form>';
-                        //check if user is logged in
+                                              //check if user is logged in
                         var memberEmail = sessionStorage.getItem('memberEmail');
                         //display 'Add To Cart' button only if user is logged in
                         if(memberEmail != null && memberEmail != '') {
@@ -57,9 +65,12 @@
                                 '\')">Add To Cart</button>';
                         }
                         htmlTxt += '</span></span></li>';
+                        });
+                      
+                  
                    
                     document.getElementById("furnituresDisplay").innerHTML = htmlTxt;
-                    document.getElementById("categoryTitle").innerHTML = cat;
+                    //document.getElementById("categoryTitle").innerHTML = cat;
                 }).catch(function(error) {
                     console.log(error);
                 });

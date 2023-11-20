@@ -4,8 +4,8 @@ let middleware = require('./middleware');
 
 var promotion = require('../model/promotionModel.js');
 app.get('/api/getAllItemsOnPromotion', function (req, res) {
-
-    promotion.getAllItemsOnPromotion()
+    const countryID = parseInt(req.query.countryId)
+    promotion.getAllItemsOnPromotion(countryID)
         .then((result) => {
             res.send(result);
         })
